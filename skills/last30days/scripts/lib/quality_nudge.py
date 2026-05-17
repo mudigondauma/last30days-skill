@@ -86,6 +86,17 @@ def _is_instagram_silent_failure(config: dict, research_results: dict) -> bool:
     """
     if not config.get("SCRAPECREATORS_API_KEY"):
         return False  # not configured — not a silent failure
+    # Honor EXCLUDE_SOURCES: a user who set EXCLUDE_SOURCES=instagram
+    # intentionally turned the source off, so a zero-item count is
+    # expected, not a silent failure. Mirror the canonical parsing
+    # pattern from pipeline.available_sources().
+    excluded = {
+        s.strip().lower()
+        for s in (config.get("EXCLUDE_SOURCES") or "").split(",")
+        if s.strip()
+    }
+    if "instagram" in excluded:
+        return False
     count = research_results.get("instagram_items_count")
     if count is None:
         return False  # source not run this invocation

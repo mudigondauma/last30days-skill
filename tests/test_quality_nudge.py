@@ -469,3 +469,49 @@ class TestInstagramSilentFailure:
         q = _compute()
         assert q.get("bonus_errored") == []
 
+    def test_exclude_sources_instagram_suppresses_silent_failure(self):
+        """User set EXCLUDE_SOURCES=instagram - the source intentionally did
+        not run, so the zero-count instagram_items_count written by
+        last30days.py is a non-event, not a silent failure. Pre-fix: the
+        nudge fired anyway because the gate only checked SC-key + count.
+        """
+        q = _compute(
+            config_overrides={
+                "AUTH_TOKEN": "tok123",
+                "SCRAPECREATORS_API_KEY": "sc_key",
+                "EXCLUDE_SOURCES": "instagram",
+            },
+            ytdlp_installed=True,
+            result_overrides={"instagram_items_count": 0},
+        )
+        assert "instagram" not in q["bonus_errored"]
+        assert q["nudge_text"] is None
+
+    def test_exclude_sources_multi_value_with_instagram(self):
+        """Canonical parsing pattern is comma-separated; case-insensitive."""
+        q = _compute(
+            config_overrides={
+                "AUTH_TOKEN": "tok123",
+                "SCRAPECREATORS_API_KEY": "sc_key",
+                "EXCLUDE_SOURCES": "threads, Instagram , pinterest",
+            },
+            ytdlp_installed=True,
+            result_overrides={"instagram_items_count": 0},
+        )
+        assert "instagram" not in q["bonus_errored"]
+
+    def test_exclude_sources_other_value_still_flags(self):
+        """EXCLUDE_SOURCES that does not mention instagram must not suppress
+        the silent-failure nudge for instagram.
+        """
+        q = _compute(
+            config_overrides={
+                "AUTH_TOKEN": "tok123",
+                "SCRAPECREATORS_API_KEY": "sc_key",
+                "EXCLUDE_SOURCES": "threads",
+            },
+            ytdlp_installed=True,
+            result_overrides={"instagram_items_count": 0},
+        )
+        assert "instagram" in q["bonus_errored"]
+

@@ -231,13 +231,18 @@ class TestSearchEndpointHostResolution(unittest.TestCase):
         else:
             os.environ.pop("BSKY_SEARCH_HOST", None)
 
-    def test_module_constant_uses_canonical_appview(self):
-        # Regression guard against the public mirror reappearing as the default
-        self.assertIn("api.bsky.app", bluesky.BSKY_SEARCH_URL)
+    def test_resolver_default_uses_canonical_appview(self):
+        # Regression guard against the public mirror reappearing as the default.
+        # Anchored at the resolver because that is the code path search_bluesky
+        # actually calls; a module-level constant would not catch a resolver
+        # regression.
+        self.assertIn("api.bsky.app", bluesky._resolve_search_url())
 
-    def test_module_constant_does_not_use_public_mirror(self):
-        # Hard regression guard — the exact host that BunnyCDN was blocking
-        self.assertNotIn("public.api.bsky.app", bluesky.BSKY_SEARCH_URL)
+    def test_resolver_default_does_not_use_public_mirror(self):
+        # Hard regression guard — the exact host that BunnyCDN was blocking.
+        # Asserted at the resolver level (the runtime path) so a default-host
+        # regression in _resolve_search_url is actually caught.
+        self.assertNotIn("public.api.bsky.app", bluesky._resolve_search_url())
 
     def test_resolver_default_when_no_override(self):
         self.assertEqual(

@@ -24,7 +24,6 @@ from . import http, log
 
 BSKY_SESSION_URL = "https://bsky.social/xrpc/com.atproto.server.createSession"
 _DEFAULT_BSKY_SEARCH_HOST = "api.bsky.app"
-BSKY_SEARCH_URL = f"https://{_DEFAULT_BSKY_SEARCH_HOST}/xrpc/app.bsky.feed.searchPosts"
 
 
 def _resolve_search_url(config: Optional[Dict[str, Any]] = None) -> str:
