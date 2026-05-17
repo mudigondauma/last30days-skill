@@ -265,6 +265,7 @@ def get_config() -> dict[str, Any]:
         ('FROM_BROWSER', None),
         ('SETUP_COMPLETE', None),
         ('INCLUDE_SOURCES', ''),
+        ('EXCLUDE_SOURCES', ''),
     ]
 
     for key, default in keys:

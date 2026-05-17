@@ -327,6 +327,7 @@ Common patterns:
 - If SCRAPECREATORS_API_KEY is set and INCLUDE_SOURCES contains pinterest: add Pinterest
 - If BSKY_HANDLE and BSKY_APP_PASSWORD are set: add Bluesky
 - If OPENROUTER_API_KEY is set: add Perplexity
+- If EXCLUDE_SOURCES is set (comma-separated, case-insensitive): drop any matching source from the list above before displaying
 
 Then display (use "and more" if 5+ sources, otherwise list all with Oxford comma):
 
